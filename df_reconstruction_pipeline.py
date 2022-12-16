@@ -163,7 +163,8 @@ def troppo_integration(algorithm: str, threshold: float):
 
     omics_dataset = pd.read_csv(OMICS_DATA_PATH, index_col=0)
 
-    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, 'HumanGEM_%s_%s_%s.csv') % (DATASET, algorithm, threshold)
+    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, 'HumanGEM_%s_%s_%s.csv') \
+                          % (DATASET, algorithm, round(threshold, 2))
 
     omics_data = TabularReader(path_or_df=omics_dataset, nomenclature='ensemble_gene_id',
                                omics_type='transcriptomics').to_containers()

@@ -4,7 +4,8 @@ from numpy import log, linspace
 MODEL = 'HumanGEM'
 DATASET = 'Desai-GTEx'
 # DATASET = 'Blanco-Melo'
-ALGORITHMS = ['fastcore', 'tinit']
+# ALGORITHMS = ['fastcore', 'tinit']
+ALGORITHMS = ['tinit']
 TS = linspace(0.25, 0.75, 11)
 FASTCORE_THRESHOLDS = TS*2*log(2)
 TINIT_THRESHOLDS = TS*2*log(2)

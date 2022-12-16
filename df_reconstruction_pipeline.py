@@ -135,12 +135,14 @@ def reconstruction_function(omics_container, parameters: dict):
         return {r: False for r in rec_wrapper.model_reader.r_ids}
 
 
-def troppo_integration(algorithm: str, threshold: float):
+def troppo_integration(model: cobra.Model, algorithm: str, threshold: float):
     """
     This function is used to run the Troppo's integration algorithms.
 
     Parameters
     ----------
+    model: cobra.Model
+        The COBRA model.
     algorithm: str
         The algorithm to be used.
     threshold: float
@@ -159,12 +161,12 @@ def troppo_integration(algorithm: str, threshold: float):
 
     details = [DATASET, algorithm, threshold]
 
-    template_model = load_model(MODEL_PATH, CONSISTENT_MODEL_PATH)
+    template = model.copy()
 
     omics_dataset = pd.read_csv(OMICS_DATA_PATH, index_col=0)
 
-    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, 'HumanGEM_%s_%s_%s.csv') \
-                          % (DATASET, algorithm, round(threshold, 2))
+    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, 'HumanGEM_%s_%s_%s.csv') % (DATASET, algorithm,
+                                                                                        round(threshold, 2))
 
     omics_data = TabularReader(path_or_df=omics_dataset, nomenclature='ensemble_gene_id',
                                omics_type='transcriptomics').to_containers()
@@ -173,7 +175,7 @@ def troppo_integration(algorithm: str, threshold: float):
     print('Tabular Reader Finished.')
     block_print()
 
-    reconstruction_wrapper = ReconstructionWrapper(template_model, ttg_ratio=9999,
+    reconstruction_wrapper = ReconstructionWrapper(template, ttg_ratio=9999,
                                                    gpr_gene_parse_function=replace_alt_transcripts)
 
     enable_print()
@@ -206,19 +208,21 @@ def default_reconstruction_pipeline():
     All the parameters required to run this pipeline can be defined in the pipeline_paths.py, config_variables.py,
     and medium_variables.py files.
     """
+    template_model = load_model(MODEL_PATH, CONSISTENT_MODEL_PATH)
+
     integration_result = {}
 
     for algorithm in ALGORITHMS:
 
         if algorithm == 'fastcore':
             for t in FASTCORE_THRESHOLDS:
-                troppo_result = troppo_integration(algorithm, t)
+                troppo_result = troppo_integration(template_model, algorithm, t)
                 for sample in integration_result:
                     integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(t, 2))] = troppo_result[sample]
 
         elif algorithm == 'tinit':
             for t in TINIT_THRESHOLDS:
-                troppo_result = troppo_integration(algorithm, t)
+                troppo_result = troppo_integration(template_model, algorithm, t)
                 for sample in troppo_result:
                     integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(t, 2))] = troppo_result[sample]
 

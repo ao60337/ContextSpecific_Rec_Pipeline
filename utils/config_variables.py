@@ -6,9 +6,9 @@ DATASET = 'Desai-GTEx'
 # DATASET = 'Blanco-Melo'
 # ALGORITHMS = ['fastcore', 'tinit']
 ALGORITHMS = ['tinit']
-TS = linspace(0.25, 0.75, 11)
-FASTCORE_THRESHOLDS = TS*2*log(2)
-TINIT_THRESHOLDS = TS*2*log(2)
+THRESHOLDS = linspace(0.25, 0.75, 11)
+FASTCORE_THRESHOLDS = THRESHOLDS*2*log(2)
+TINIT_THRESHOLDS = THRESHOLDS*2*log(2)
 
 if DATASET == 'Desai-GTEx':
     THREAD_NUMBER = 5

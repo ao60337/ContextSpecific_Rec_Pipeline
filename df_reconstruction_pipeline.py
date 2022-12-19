@@ -4,7 +4,7 @@ import warnings
 import traceback
 
 # Warnings and prints are blocked to avoid massive outputs that appear after running COBAMP.
-warnings.filterwarnings("ignore")
+warnings.simplefilter("ignore")
 
 
 # Disable
@@ -135,7 +135,7 @@ def reconstruction_function(omics_container, parameters: dict):
         return {r: False for r in rec_wrapper.model_reader.r_ids}
 
 
-def troppo_integration(model: cobra.Model, algorithm: str, threshold: float):
+def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thread_number: int):
     """
     This function is used to run the Troppo's integration algorithms.
 
@@ -147,6 +147,8 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float):
         The algorithm to be used.
     threshold: float
         The threshold to be used.
+    thread_number: int
+        The number of threads to be used.
 
     Returns
     -------
@@ -184,7 +186,7 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float):
 
     parameters = {'threshold': threshold, 'reconstruction_wrapper': reconstruction_wrapper, 'algorithm': algorithm}
 
-    batch_fastcore_res = batch_run(reconstruction_function, omics_data, parameters, threads=THREAD_NUMBER)
+    batch_fastcore_res = batch_run(reconstruction_function, omics_data, parameters, threads=thread_number)
 
     result_dict = dict(zip([sample.condition for sample in omics_data], batch_fastcore_res))
 
@@ -198,6 +200,50 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float):
     return result_dict
 
 
+def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integration_result_dict: dict):
+    """
+    This function is used to reconstruct the model based on the integration results.
+
+    Parameters
+    ----------
+    model_template: cobra.Model
+        The COBRA model template.
+    sample: str
+        The sample name.
+    integration_result_dict: dict
+        The integration results.
+    """
+
+    with model_template as temp_model:
+        if 'COVID19' in sample:
+            temp_model.objective = 'VBOF'
+        else:
+            temp_model.objective = 'biomass_human'
+
+        reactions_to_deactivate = [reaction for reaction, value in
+                                   integration_result_dict[sample].items() if value is False]
+
+        for reaction in reactions_to_deactivate:
+            temp_model.remove_reactions([reaction])
+
+        enable_print()
+
+        for reaction_id, bound in MEDIUM_CONDITIONS['HAM Medium'].items():
+            if reaction_id in model_template.reactions:
+                model_template.reactions.get_by_id(reaction_id).bounds = bound
+            else:
+                print(reaction_id, 'exchange not found in the model.')
+
+        model_name = sample.split('_')[3] + '/' + sample.split('_')[1] + '/' + sample + '.xml'
+
+        cobra.io.write_sbml_model(temp_model, os.path.join(MODEL_RESULTS_PATH, model_name))
+
+        print('Model reconstruction for %s finished.' % sample)
+        print_model_details(temp_model)
+
+        block_print()
+
+
 def default_reconstruction_pipeline():
     """
     This function is used to run the reconstruction pipeline.
@@ -208,28 +254,96 @@ def default_reconstruction_pipeline():
     All the parameters required to run this pipeline can be defined in the pipeline_paths.py, config_variables.py,
     and medium_variables.py files.
     """
+    enable_print()
+
+    print('-------------------------------------------------------------------------------------------------------')
+    print('--------------------------------------- Loading template model. ---------------------------------------')
+    print('-------------------------------------------------------------------------------------------------------')
+
+    block_print()
+
     template_model = load_model(MODEL_PATH, CONSISTENT_MODEL_PATH)
+
+    enable_print()
+
+    print('-------------------------------------------------------------------------------------------------------')
+    print('------------------------------- Starting Omics Integration with Troppo. -------------------------------')
+    print('-------------------------------------------------------------------------------------------------------')
+
+    block_print()
 
     integration_result = {}
 
     for algorithm in ALGORITHMS:
 
+        enable_print()
+
+        print('Omics Integration with %s Started.' % algorithm)
+        print('-------------------------------------------------------------------------------------------------------')
+
+        block_print()
+
         if algorithm == 'fastcore':
-            for t in FASTCORE_THRESHOLDS:
-                troppo_result = troppo_integration(template_model, algorithm, t)
-                for sample in integration_result:
-                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(t, 2))] = troppo_result[sample]
+            for threshold in FASTCORE_THRESHOLDS:
+                troppo_result = troppo_integration(template_model, algorithm, threshold, THREAD_NUMBER_FASTCORE)
+                for sample in list(troppo_result.keys()):
+                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(threshold, 2))] \
+                        = troppo_result[sample]
+
+            enable_print()
+
+            print('----------------------------------------------------------'
+                  '---------------------------------------------')
+
+            block_print()
 
         elif algorithm == 'tinit':
-            for t in TINIT_THRESHOLDS:
-                troppo_result = troppo_integration(template_model, algorithm, t)
-                for sample in troppo_result:
-                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(t, 2))] = troppo_result[sample]
+            for threshold in TINIT_THRESHOLDS:
+                troppo_result = troppo_integration(template_model, algorithm, threshold, THREAD_NUMBER_TINIT)
+                for sample in list(troppo_result.keys()):
+                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(threshold, 2))] = \
+                        troppo_result[sample]
+
+            enable_print()
+
+            print('----------------------------------------------------------'
+                  '---------------------------------------------')
+
+            block_print()
+
+    enable_print()
+
+    print('-------------------------------------------------------------------------------------------------------')
+    print('----------------------- Starting Reconstruction of the Context-Specific Models. -----------------------')
+    print('-------------------------------------------------------------------------------------------------------')
+
+    block_print()
+
+    for sample_name in list(integration_result.keys()):
+        enable_print()
+
+        print('Context-specific model reconstruction for %s started.' % sample_name)
+        print('-------------------------------------------------------------------------------------------------------')
+
+        sbml_model_reconstruction(template_model, sample_name, integration_result)
+
+        print('-------------------------------------------------------------------------------------------------------')
+
+        block_print()
 
     # TODO: Add the implementation of the local threshold functions to the pipeline.
-    # TODO: Add a function to generate the SBML human1_models with the integration results.
+    # TODO: Add the option for more integration algorithms in the pipeline.
     # TODO: Add a function to implement gap-filling to the human1_models generated with troppo.
     # TODO: Add a function to evaluate task performance of the human1_models generated with troppo.
+
+    enable_print()
+
+    print('-------------------------------------------------------------------------------------------------------')
+    print('------------------------------------------ Pipeline Finished ------------------------------------------')
+    print('-------------------------------------------------------------------------------------------------------')
+
+    block_print()
+
     return integration_result
 
 

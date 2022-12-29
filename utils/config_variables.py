@@ -24,9 +24,7 @@ THREAD_NUMBER_TINIT = 4  # int.
 AND_OR_FUNCS = (min, max)  # (min, max) or (min, sum).
 THRESHOLDS = linspace(0.25, 0.75, 5)  # List of ints or floats.
 INTEGRATION_THRESHOLDS = THRESHOLDS * 2 * log(2)  # NOT NECESSARY: Just a transformation of the thresholds.
-PROTECTED = [['biomass_human', 'VBOF', 'EX_VBOF']] + list(UPTAKE_DRAINS['HAM Medium'])
-# List of Reactions to be protected during the integration process.
-
+PROTECTED = [['biomass_human', 'VBOF', 'EX_VBOF']] + list(UPTAKE_DRAINS['HAM Medium'])  # List of Reactions to protect.
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Task evaluation parameters -------------------------------------------------------------------------------------------

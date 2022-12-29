@@ -43,7 +43,6 @@ def print_model_details(cobra_model):
 
     """
     enable_print()
-
     transporters = []
 
     for reac in cobra_model.reactions:
@@ -54,7 +53,6 @@ def print_model_details(cobra_model):
     print('Reactions:', (len(cobra_model.reactions)) - len(transporters) - len(cobra_model.exchanges))
     print('Transporters:', len(transporters))
     print('Exchanges:', len(cobra_model.exchanges))
-
     block_print()
 
 
@@ -122,11 +120,11 @@ def reconstruction_function(omics_container, parameters: dict):
     # noinspection PyBroadException
     try:
         if method == 'fastcore':
-            return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=(min, sum),
+            return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=AND_OR_FUNCS,
                                               integration_strategy=('custom', [integration_fx]), solver='CPLEX')
 
         elif method == 'tinit':
-            return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=(min, sum),
+            return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=AND_OR_FUNCS,
                                               integration_strategy=('continuous', score_apply), solver='CPLEX')
 
     except:
@@ -167,11 +165,8 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
 
     omics_dataset = pd.read_csv(OMICS_DATA_PATH, index_col=0)
 
-    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, 'HumanGEM_%s_%s_%s.csv') % (DATASET, algorithm,
-                                                                                        round(threshold, 2))
-
-    omics_data = TabularReader(path_or_df=omics_dataset, nomenclature='ensemble_gene_id',
-                               omics_type='transcriptomics').to_containers()
+    omics_data = TabularReader(path_or_df=omics_dataset, nomenclature=NOMENCLATURE,
+                               omics_type=OMICS_TYPE).to_containers()
 
     enable_print()
     print('Tabular Reader Finished.')
@@ -189,9 +184,6 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
     batch_fastcore_res = batch_run(reconstruction_function, omics_data, parameters, threads=thread_number)
 
     result_dict = dict(zip([sample.condition for sample in omics_data], batch_fastcore_res))
-
-    integration_result = pd.DataFrame.from_dict(result_dict, orient='index')
-    integration_result.to_csv(troppo_results_path)
 
     enable_print()
     print('Omics Integration with %s (Threshold = %s) Finished.' % (details[1], details[2]))
@@ -215,10 +207,7 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
     """
 
     with model_template as temp_model:
-        if 'COVID19' in sample:
-            temp_model.objective = 'VBOF'
-        else:
-            temp_model.objective = 'biomass_human'
+        temp_model.objective = OBJECTIVE
 
         reactions_to_deactivate = [reaction for reaction, value in
                                    integration_result_dict[sample].items() if value is False]
@@ -227,20 +216,18 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
             temp_model.remove_reactions([reaction])
 
         enable_print()
-
-        for reaction_id, bound in MEDIUM_CONDITIONS['HAM Medium'].items():
-            if reaction_id in model_template.reactions:
-                model_template.reactions.get_by_id(reaction_id).bounds = bound
+        for reaction_id, bound in MEDIUM_CONDITIONS[MEDIUM_NAME].items():
+            if reaction_id in temp_model.reactions:
+                temp_model.reactions.get_by_id(reaction_id).bounds = bound
             else:
                 print(reaction_id, 'exchange not found in the model.')
 
-        model_name = sample.split('_')[3] + '/' + sample.split('_')[1] + '/' + sample + '.xml'
+        model_name = sample.split('_')[1] + '/' + sample + '.xml'
 
         cobra.io.write_sbml_model(temp_model, os.path.join(MODEL_RESULTS_PATH, model_name))
 
         print('Model reconstruction for %s finished.' % sample)
         print_model_details(temp_model)
-
         block_print()
 
 
@@ -248,28 +235,24 @@ def default_reconstruction_pipeline():
     """
     This function is used to run the reconstruction pipeline.
 
-    In the end this function generates a SBML file of the tissue-specific models that resulted from the omics data
-    integration with Troppo.
+    In the end this function generates a SBML file of the tissue-specific reconstructed_models that resulted from the omics
+    data integration with Troppo.
 
-    All the parameters required to run this pipeline can be defined in the pipeline_paths.py, config_variables.py,
-    and medium_variables.py files.
+    All the parameters required to run this pipeline can be defined in the ***pipeline_paths.py***,
+    ***config_variables.py***, and ***medium_variables.py files***.
     """
     enable_print()
-
     print('-------------------------------------------------------------------------------------------------------')
     print('--------------------------------------- Loading template model. ---------------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
-
     block_print()
 
     template_model = load_model(MODEL_PATH, CONSISTENT_MODEL_PATH)
 
     enable_print()
-
     print('-------------------------------------------------------------------------------------------------------')
     print('------------------------------- Starting Omics Integration with Troppo. -------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
-
     block_print()
 
     integration_result = {}
@@ -277,71 +260,62 @@ def default_reconstruction_pipeline():
     for algorithm in ALGORITHMS:
 
         enable_print()
-
         print('Omics Integration with %s Started.' % algorithm)
         print('-------------------------------------------------------------------------------------------------------')
-
         block_print()
 
         if algorithm == 'fastcore':
-            for threshold in FASTCORE_THRESHOLDS:
-                troppo_result = troppo_integration(template_model, algorithm, threshold, THREAD_NUMBER_FASTCORE)
-                for sample in list(troppo_result.keys()):
-                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(threshold, 2))] \
-                        = troppo_result[sample]
-
-            enable_print()
-
-            print('----------------------------------------------------------'
-                  '---------------------------------------------')
-
-            block_print()
+            thred_number = THREAD_NUMBER_FASTCORE
 
         elif algorithm == 'tinit':
-            for threshold in TINIT_THRESHOLDS:
-                troppo_result = troppo_integration(template_model, algorithm, threshold, THREAD_NUMBER_TINIT)
-                for sample in list(troppo_result.keys()):
-                    integration_result['HumanGEM_%s_%s_%s' % (sample, algorithm, round(threshold, 2))] = \
-                        troppo_result[sample]
+            thred_number = THREAD_NUMBER_TINIT
+
+        else:
+            return 'Algorithm not supported by this pipeline.'
+
+        for threshold in INTEGRATION_THRESHOLDS:
+            troppo_result = troppo_integration(template_model, algorithm, threshold, thred_number)
+
+            for sample in list(troppo_result.keys()):
+                th = str(round(threshold, 2)).replace('.', '_')
+                integration_result['%s_%s_%s_%s_%s' % (MODEL, sample, algorithm, THRESHOLDING_STRATEGY,
+                                                       th)] = troppo_result[sample]
 
             enable_print()
-
             print('----------------------------------------------------------'
                   '---------------------------------------------')
-
             block_print()
 
-    enable_print()
+    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, '%s_%s_%s.csv') % (MODEL, DATASET, THRESHOLDING_STRATEGY)
+    integration_dataframe = pd.DataFrame.from_dict(integration_result, orient='index')
+    integration_dataframe.to_csv(troppo_results_path)
 
-    print('-------------------------------------------------------------------------------------------------------')
+    enable_print()
     print('----------------------- Starting Reconstruction of the Context-Specific Models. -----------------------')
     print('-------------------------------------------------------------------------------------------------------')
-
     block_print()
 
     for sample_name in list(integration_result.keys()):
         enable_print()
-
         print('Context-specific model reconstruction for %s started.' % sample_name)
         print('-------------------------------------------------------------------------------------------------------')
+        block_print()
 
         sbml_model_reconstruction(template_model, sample_name, integration_result)
 
+        enable_print()
         print('-------------------------------------------------------------------------------------------------------')
-
         block_print()
 
     # TODO: Add the implementation of the local threshold functions to the pipeline.
     # TODO: Add the option for more integration algorithms in the pipeline.
-    # TODO: Add a function to implement gap-filling to the human1_models generated with troppo.
-    # TODO: Add a function to evaluate task performance of the human1_models generated with troppo.
+    # TODO: Add a function to implement gap-filling to the reconstructed_models generated with troppo.
+    # TODO: Add a function to evaluate task performance of the reconstructed_models generated with troppo.
 
     enable_print()
-
     print('-------------------------------------------------------------------------------------------------------')
     print('------------------------------------------ Pipeline Finished ------------------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
-
     block_print()
 
     return integration_result

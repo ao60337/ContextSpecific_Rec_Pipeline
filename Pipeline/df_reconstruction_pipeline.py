@@ -50,8 +50,8 @@ def default_reconstruction_pipeline():
 
             for sample in list(troppo_result.keys()):
                 th = str(round(threshold, 2)).replace('.', '_')
-                integration_result['%s_%s_%s_%s_%s' % (MODEL, sample, algorithm, THRESHOLDING_STRATEGY,
-                                                       th)] = troppo_result[sample]
+                integration_result['%s_%s_%s_%s_t%s' % (MODEL, sample, algorithm, THRESHOLDING_STRATEGY,
+                                                        th)] = troppo_result[sample]
 
             print('----------------------------------------------------------'
                   '---------------------------------------------')

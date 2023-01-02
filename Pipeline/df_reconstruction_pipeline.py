@@ -27,6 +27,8 @@ def default_reconstruction_pipeline():
     print('------------------------------- Starting Omics Integration with Troppo. -------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
 
+    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0)
+
     integration_result = {}
 
     for algorithm in ALGORITHMS:

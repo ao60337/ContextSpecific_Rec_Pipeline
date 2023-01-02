@@ -31,6 +31,8 @@ from cobamp.utilities.parallel import batch_run
 from utils.pipeline_paths import *
 from utils.config_variables import *
 
+enable_print()
+
 
 def reconstruction_function(omics_container, parameters: dict):
     """
@@ -47,6 +49,7 @@ def reconstruction_function(omics_container, parameters: dict):
     ----------
     rec_wrapper : Reconstruction Wrapper object with model and omics data.
     """
+    block_print()
 
     def integration_fx(data_map):
         return [[k for k, v in data_map.get_scores().items() if (v is not None and v > threshold) or k in PROTECTED]]
@@ -100,6 +103,7 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
         Each sample as a dictionary containing a boolean value for each reaction.
 
     """
+    block_print()
 
     patt = re.compile('__COBAMPGPRDOT__[0-9]{1}')
     replace_alt_transcripts = lambda x: patt.sub('', x)
@@ -132,6 +136,5 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
 
     enable_print()
     print('Omics Integration with %s (Threshold = %s) Finished.' % (details[1], details[2]))
-    block_print()
 
     return result_dict

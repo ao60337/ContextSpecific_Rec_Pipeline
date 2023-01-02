@@ -1,4 +1,4 @@
-from .medium_variables import UPTAKE_DRAINS
+from medium_variables import UPTAKE_DRAINS
 from numpy import log, linspace
 
 # Model and dataset names ----------------------------------------------------------------------------------------------

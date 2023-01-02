@@ -1,4 +1,4 @@
-from .config_variables import DATASET
+from config_variables import DATASET
 
 # Required Paths -------------------------------------------------------------------------------------------------------
 MODEL_PATH = 'utils/human1_models/HumanGEM_COVID19.xml'

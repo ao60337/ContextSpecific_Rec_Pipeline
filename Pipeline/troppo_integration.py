@@ -112,8 +112,6 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
 
     template = model.copy()
 
-    omics_dataset = pd.read_csv(OMICS_DATA_PATH, index_col=0)
-
     omics_data = TabularReader(path_or_df=omics_dataset, nomenclature=NOMENCLATURE,
                                omics_type=OMICS_TYPE).to_containers()
 

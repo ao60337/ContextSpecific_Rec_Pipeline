@@ -66,9 +66,15 @@ def reconstruction_pipeline():
             print('----------------------------------------------------------'
                   '---------------------------------------------')
 
-    troppo_results_path = os.path.join(TROPPO_RESULTS_PATH, '%s_%s_%s.csv') % (MODEL, DATASET, THRESHOLDING_STRATEGY)
+    if THRESHOLDING_STRATEGY == 'default':
+        troppo_result_path = os.path.join(TROPPO_RESULTS_PATH, '%s_%s_%s.csv') % (MODEL, DATASET, THRESHOLDING_STRATEGY)
+    else:
+        troppo_result_path = os.path.join(TROPPO_RESULTS_PATH, '%s_%s_%s_%s_%s_%s.csv') \
+                             % (MODEL, DATASET, THRESHOLDING_STRATEGY, GLOBAL_THRESHOLD_UPPER, GLOBAL_THRESHOLD_LOWER,
+                                LOCAL_THRESHOLD)
+
     integration_dataframe = pd.DataFrame.from_dict(integration_result, orient='index')
-    integration_dataframe.to_csv(troppo_results_path)
+    integration_dataframe.to_csv(troppo_result_path)
 
     print('----------------------- Starting reconstruction of the context-specific models. -----------------------')
     print('-------------------------------------------------------------------------------------------------------')

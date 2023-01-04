@@ -15,7 +15,7 @@
   <component name="PyNamespacePackagesService">
     <option name="namespacePackageFolders">
       <list>
-        <option value="$MODULE_DIR$/utils" />
+        <option value="$MODULE_DIR$/Pipeline/utils" />
       </list>
     </option>
   </component>

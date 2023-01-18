@@ -27,7 +27,7 @@ def local2_thresholding(sample_series, gtu, gtl, lt, maxexp):
     return upp_activity.to_dict()
 
 
-def threshold_strategy(sample_series, gtu, gtl, lt, maxexp, thresholding_strategy):
+def threshold_strategy(sample_series, gtu, gtl, lt, maxexp, thresholding_strategy) -> dict:
     """
     Thresholding strategy for the omics data. Processes a single sample at the time.
 
@@ -48,7 +48,8 @@ def threshold_strategy(sample_series, gtu, gtl, lt, maxexp, thresholding_strateg
 
     Returns
     -------
-    filtered_sample: pandas.Series
+    filtered_sample: dict
+        Filtered omics data from a specific sample.
 
     """
     if thresholding_strategy == 'Global':
@@ -65,7 +66,8 @@ def threshold_strategy(sample_series, gtu, gtl, lt, maxexp, thresholding_strateg
 
 
 def thresholding_filter(omics_dataframe: pandas.DataFrame, thresholding_strategy: int,
-                        global_threshold_upper: int, global_threshold_lower: int, local_threshold: int):
+                        global_threshold_upper: int, global_threshold_lower: int,
+                        local_threshold: int) -> pandas.DataFrame:
     """
     Thresholding filter for the omics data.
 

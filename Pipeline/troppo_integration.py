@@ -22,13 +22,11 @@ def enable_print():
 block_print()
 
 import cobra
-import pandas as pd
 import re
 
 from troppo.omics.readers.generic import TabularReader
 from troppo.methods_wrappers import ReconstructionWrapper
 from cobamp.utilities.parallel import batch_run
-from utils.pipeline_paths import *
 from utils.config_variables import *
 
 enable_print()
@@ -78,8 +76,8 @@ def reconstruction_function(omics_container, parameters: dict):
         return {r: False for r in rec_wrapper.model_reader.r_ids}
 
 
-def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thread_number: int,
-                       omics_dataset: pandas.DataFrame):
+def troppo_omics_integration(model: cobra.Model, algorithm: str, threshold: float, thread_number: int,
+                             omics_dataset: pandas.DataFrame):
     """
     This function is used to run the Troppo's integration algorithms.
 
@@ -119,7 +117,7 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
     print('Tabular Reader Finished.')
     block_print()
 
-    reconstruction_wrapper = ReconstructionWrapper(template, ttg_ratio=9999,
+    reconstruction_wrapper = ReconstructionWrapper(model=template, ttg_ratio=9999,
                                                    gpr_gene_parse_function=replace_alt_transcripts)
 
     enable_print()
@@ -133,6 +131,6 @@ def troppo_integration(model: cobra.Model, algorithm: str, threshold: float, thr
     result_dict = dict(zip([sample.condition for sample in omics_data], batch_fastcore_res))
 
     enable_print()
-    print('Omics Integration with %s (Threshold = %s) Finished.' % (details[1], details[2]))
+    print(f'Omics Integration with {details[1]} (Threshold = {details[2]}) Finished.')
 
     return result_dict

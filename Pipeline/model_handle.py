@@ -29,7 +29,7 @@ def print_model_details(cobra_model):
     print('Exchanges:', len(cobra_model.exchanges))
 
 
-def load_model(model_path: str, consistent_model_path: str):
+def load_model(model_path: str, consistent_model_path: str) -> cobra.Model:
     """
     This function is used to load the model.
 
@@ -96,6 +96,6 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
 
         cobra.io.write_sbml_model(temp_model, os.path.join(MODEL_RESULTS_PATH, model_name))
 
-        print('Model reconstruction for %s finished.' % sample)
+        print(f'Model reconstruction for {sample} finished.')
         print_model_details(temp_model)
 

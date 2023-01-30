@@ -10,7 +10,7 @@ from task_evaluation import task_eval
 
 
 # TODO: Add the option for more integration algorithms in the pipeline.
-# TODO: Add a function to evaluate task performance of the reconstructed_models generated with troppo.
+# TODO: Add gap-filling to the pipeline.
 
 def reconstruction_pipeline():
     """
@@ -50,7 +50,7 @@ def reconstruction_pipeline():
     integration_result = {}
 
     for algorithm in ALGORITHMS:
-
+        troppo_result_dict = {}
         print(f'Omics integration with {algorithm} started.')
         print('-------------------------------------------------------------------------------------------------------')
 
@@ -69,20 +69,22 @@ def reconstruction_pipeline():
 
             for sample in list(troppo_result.keys()):
                 th = str(round(threshold, 2)).replace('.', '_')
+                troppo_result_dict[f'{MODEL}_{sample}_{algorithm}_t{th}'] = troppo_result[sample]
                 integration_result[f'{MODEL}_{sample}_{algorithm}_t{th}'] = troppo_result[sample]
 
             print('----------------------------------------------------------'
                   '---------------------------------------------')
 
-    if THRESHOLDING_STRATEGY == 'default':
-        troppo_result_path = os.path.join(TROPPO_RESULTS_PATH, f'{MODEL}_{DATASET}_{THRESHOLDING_STRATEGY}.csv')
-    else:
-        file_path = f'{MODEL}_{DATASET}_{THRESHOLDING_STRATEGY}_' \
-                    f'{GLOBAL_THRESHOLD_UPPER}_{GLOBAL_THRESHOLD_LOWER}_{LOCAL_THRESHOLD}.csv'
-        troppo_result_path = os.path.join(TROPPO_RESULTS_PATH, file_path)
+        if THRESHOLDING_STRATEGY == 'default':
+            result_path = os.path.join(TROPPO_RESULTS_PATH,
+                                       f'{MODEL}_{DATASET}_{algorithm}_{THRESHOLDING_STRATEGY}.csv')
+        else:
+            file_path = f'{MODEL}_{DATASET}_{algorithm}_{THRESHOLDING_STRATEGY}_' \
+                        f'{GLOBAL_THRESHOLD_UPPER}_{GLOBAL_THRESHOLD_LOWER}_{LOCAL_THRESHOLD}.csv'
+            result_path = os.path.join(TROPPO_RESULTS_PATH, file_path)
 
-    integration_dataframe = pd.DataFrame.from_dict(integration_result, orient='index')
-    integration_dataframe.to_csv(troppo_result_path)
+        troppo_result_dataframe = pd.DataFrame.from_dict(troppo_result_dict, orient='index')
+        troppo_result_dataframe.to_csv(result_path)
 
     if EVALUATE_TASKS:
         print('------------------------ Starting task evaluation for the integration results. ------------------------')

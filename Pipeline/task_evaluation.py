@@ -1,10 +1,3 @@
-from utils.config_variables import PROTECTED
-from utils.pipeline_paths import MODEL_TASKS_PATH, MODEL_TASKS_RESULTS_PATH
-from json import JSONEncoder
-from troppo.tasks.core import TaskEvaluator
-from troppo.tasks.task_io import JSONTaskIO
-from cobamp.utilities.parallel import batch_run
-import cobra
 import sys
 import os
 import warnings
@@ -23,6 +16,16 @@ def enablePrint():
 
 
 blockPrint()
+
+from utils.config_variables import PROTECTED
+from utils.pipeline_paths import MODEL_TASKS_PATH, MODEL_TASKS_RESULTS_PATH
+from json import JSONEncoder
+from troppo.tasks.core import TaskEvaluator
+from troppo.tasks.task_io import JSONTaskIO
+from cobamp.utilities.parallel import batch_run
+import cobra
+
+enablePrint()
 
 
 def read_task_file(generic_model: cobra.Model) -> list:
@@ -76,6 +79,8 @@ def task_eval(model_template: cobra.Model, integration_results: dict):
         The results of the integration process.
 
     """
+    blockPrint()
+
     task_list = read_task_file(model_template)
 
     for task in task_list:
@@ -95,7 +100,7 @@ def task_eval(model_template: cobra.Model, integration_results: dict):
     for model_name, result in integration_results.items():
         with model_template as context_specific_model:
             active_reactions = set([k for k, v in result.items() if v])
-            protected_reactions = active_reactions + PROTECTED
+            protected_reactions = active_reactions | set([k for k in PROTECTED])
             reactions_to_remove = all_reactions - protected_reactions
 
             for reaction_to_remove in reactions_to_remove:
@@ -113,7 +118,3 @@ def task_eval(model_template: cobra.Model, integration_results: dict):
               'tasks completed.')
 
         write_result_jason(model_name, task_result)
-
-
-
-

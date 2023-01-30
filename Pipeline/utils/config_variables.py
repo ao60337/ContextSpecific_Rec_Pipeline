@@ -4,8 +4,6 @@ from numpy import log, linspace
 # Model and dataset names ----------------------------------------------------------------------------------------------
 MODEL = 'HumanGEM'
 DATASET = 'Desai-GTEx'
-# DATASET = 'Blanco-Melo'
-# DATASET = 'CCLE_expression_full'
 OBJECTIVE = 'biomass_human'
 MEDIUM_NAME = 'HAM Medium'
 # ----------------------------------------------------------------------------------------------------------------------
@@ -16,7 +14,7 @@ OMICS_TYPE = 'transcriptomics'
 THRESHOLDING_STRATEGY = 'Local2'  # Default, Global, Local1, Local2
 GLOBAL_THRESHOLD_UPPER = 0  # int
 GLOBAL_THRESHOLD_LOWER = 1  # int
-LOCAL_THRESHOLD = 3  # int
+LOCAL_THRESHOLD = 4  # int
 '''---Thresholding parameters---
 Thresholding Strategies:
  - Default: Does not use any thresholding strategy to filter the omics data;
@@ -28,14 +26,13 @@ The numbers in the thresholding options represent the position of the value to u
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Troppo parameters ----------------------------------------------------------------------------------------------------
-# ALGORITHMS = ['fastcore', 'tinit']
-ALGORITHMS = ['tinit']
+ALGORITHMS = ['fastcore']
 THREAD_NUMBER_FASTCORE = 10  # int.
 THREAD_NUMBER_TINIT = 2  # int.
 AND_OR_FUNCS = (min, sum)  # (min, max) or (min, sum).
 THRESHOLDS = linspace(0.25, 0.75, 5)  # List of ints or floats.
-INTEGRATION_THRESHOLDS = [THRESHOLDS[0] * 2 * log(2)]  # NOT NECESSARY: Just a transformation of the thresholds.
-PROTECTED = [['biomass_human', 'VBOF', 'EX_VBOF']] + list(UPTAKE_DRAINS['HAM Medium'])  # List of Reactions to protect.
+INTEGRATION_THRESHOLDS = [THRESHOLDS[0] * 2 * log(2)]  # NOT NECESSARY: Just a transformation of the threshold.
+PROTECTED = ['biomass_human', 'VBOF', 'EX_VBOF'] + list(UPTAKE_DRAINS['HAM Medium'])  # List of Reactions to protect.
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Task evaluation parameters -------------------------------------------------------------------------------------------
@@ -43,9 +40,9 @@ EVALUATE_TASKS = True
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Gap-filling parameters -----------------------------------------------------------------------------------------------
-GAP_FILLING = True
+GAP_FILLING = False
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Model Reconstruction -------------------------------------------------------------------------------------------------
-RECONSTRUCT_MODELS = True
+RECONSTRUCT_MODELS = False
 # ----------------------------------------------------------------------------------------------------------------------

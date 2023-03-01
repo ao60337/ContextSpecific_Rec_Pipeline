@@ -3,9 +3,9 @@ import os
 
 from cobra.flux_analysis import find_blocked_reactions
 from cobra.io import write_sbml_model
-from utils.medium_variables import MEDIUM_CONDITIONS
-from utils.config_variables import OBJECTIVE, MEDIUM_NAME
-from utils.pipeline_paths import MODEL_RESULTS_PATH
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.medium_variables import MEDIUM_CONDITIONS
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.config_variables import OBJECTIVE, MEDIUM_NAME
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.pipeline_paths import MODEL_RESULTS_PATH
 
 
 def print_model_details(cobra_model):
@@ -19,9 +19,9 @@ def print_model_details(cobra_model):
     """
     transporters = []
 
-    for reac in cobra_model.reactions:
-        if len(reac.compartments) == 2:
-            transporters.append(reac.id)
+    for reaction in cobra_model.reactions:
+        if len(reaction.compartments) == 2:
+            transporters.append(reaction.id)
 
     print('Total Reactions:', len(cobra_model.reactions))
     print('Reactions:', (len(cobra_model.reactions)) - len(transporters) - len(cobra_model.exchanges))
@@ -81,8 +81,8 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
         temp_model.objective = OBJECTIVE
 
         reactions_to_deactivate = [reaction for reaction, value in
-                                   integration_result_dict[sample].items() if value is False]
-
+                                   integration_result_dict[sample].items() if value is False and temp_model.reactions.get_by_id(reaction).genes]
+        print('Reactions to deactivate:', len(reactions_to_deactivate))
         for reaction in reactions_to_deactivate:
             temp_model.remove_reactions([reaction])
 
@@ -93,9 +93,8 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
                 print(reaction_id, 'exchange not found in the model.')
 
         model_name = sample.split('_')[1] + '/' + sample + '.xml'
-
+        print(temp_model.optimize())
         cobra.io.write_sbml_model(temp_model, os.path.join(MODEL_RESULTS_PATH, model_name))
 
         print(f'Model reconstruction for {sample} finished.')
         print_model_details(temp_model)
-

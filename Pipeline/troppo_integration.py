@@ -77,7 +77,7 @@ def reconstruction_function(omics_container, parameters: dict):
 
 
 def troppo_omics_integration(model: cobra.Model, algorithm: str, threshold: float, thread_number: int,
-                             omics_dataset: pandas.DataFrame):
+                             omics_dataset: pandas.DataFrame, thresholds_map = {}):
     """
     This function is used to run the Troppo's integration algorithms.
 

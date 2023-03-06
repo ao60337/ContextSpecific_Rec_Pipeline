@@ -31,7 +31,7 @@ THREAD_NUMBER_FASTCORE = 10  # int.
 THREAD_NUMBER_TINIT = 10  # int.
 AND_OR_FUNCS = (min, sum)  # (min, max) or (min, sum).
 # THRESHOLDS = linspace(0.25, 0.75, 5)  # List of ints or floats.
-INTEGRATION_THRESHOLDS = [2.8]  # NOT NECESSARY: Just a transformation of the threshold.
+INTEGRATION_THRESHOLDS = [2.8, 3.7]  # NOT NECESSARY: Just a transformation of the threshold.
 PROTECTED = ['e_Biomass__cytop'] + list(UPTAKE_DRAINS['f2 medium'])  # List of Reactions to protect.
 # ----------------------------------------------------------------------------------------------------------------------
 

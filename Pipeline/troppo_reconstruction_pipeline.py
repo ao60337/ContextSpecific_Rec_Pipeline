@@ -37,8 +37,8 @@ def reconstruction_pipeline():
 
     if THRESHOLDING_STRATEGY != 'default':
         omics_data = thresholding_filter(omics_dataframe=omics_data, thresholding_strategy=THRESHOLDING_STRATEGY,
-                                         global_threshold_upper=GLOBAL_THRESHOLD_UPPER,
                                          global_threshold_lower=GLOBAL_THRESHOLD_LOWER,
+                                         global_threshold_upper=GLOBAL_THRESHOLD_UPPER,
                                          local_threshold=LOCAL_THRESHOLD)
 
         print(f'{THRESHOLDING_STRATEGY} threshold filter applied.')
@@ -80,7 +80,7 @@ def reconstruction_pipeline():
                                        f'{MODEL}_{DATASET}_{algorithm}_{THRESHOLDING_STRATEGY}.csv')
         else:
             file_path = f'{MODEL}_{DATASET}_{algorithm}_{THRESHOLDING_STRATEGY}_' \
-                        f'{GLOBAL_THRESHOLD_UPPER}_{GLOBAL_THRESHOLD_LOWER}_{LOCAL_THRESHOLD}.csv'
+                        f'{GLOBAL_THRESHOLD_LOWER}_{GLOBAL_THRESHOLD_UPPER}_{LOCAL_THRESHOLD}.csv'
             result_path = os.path.join(TROPPO_RESULTS_PATH, file_path)
 
         troppo_result_dataframe = pd.DataFrame.from_dict(troppo_result_dict, orient='index')

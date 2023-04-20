@@ -32,7 +32,7 @@ def reconstruction_pipeline():
     print('-------------------------------------- Processing Omics Dataset. --------------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
 
-    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0)
+    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0, sep="\t")
     print('Omics dataset Loaded.')
 
     if THRESHOLDING_STRATEGY != 'default':

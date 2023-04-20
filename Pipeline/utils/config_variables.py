@@ -2,14 +2,14 @@ from .medium_variables import UPTAKE_DRAINS
 from numpy import linspace
 
 # Model and dataset names ----------------------------------------------------------------------------------------------
-MODEL = 'HumanGEM'
-DATASET = 'Desai-GTEx'
-OBJECTIVE = 'biomass_human'
-MEDIUM_NAME = 'HAM Medium'
+MODEL = 'Dsalina'
+DATASET = 'nacl_h2o2_sorb' #'light'
+OBJECTIVE = 'e_Biomass__cytop'
+MEDIUM_NAME = 'f2 medium'
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Omics Parameters -----------------------------------------------------------------------------------------------------
-NOMENCLATURE = 'ensemble_gene_id'
+NOMENCLATURE = 'NCBI'
 OMICS_TYPE = 'transcriptomics'
 THRESHOLDING_STRATEGY = 'local2'  # default, global, local1, local2
 GLOBAL_THRESHOLD_LOWER = 1  # int
@@ -35,7 +35,7 @@ PROTECTED = ['biomass_human', 'VBOF', 'EX_VBOF'] + list(UPTAKE_DRAINS['HAM Mediu
 # ------------------------------------------------ ---------------------------------------------------------------------
 
 # Task evaluation parameters -------------------------------------------------------------------------------------------
-EVALUATE_TASKS = True
+EVALUATE_TASKS = False
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Gap-filling parameters -----------------------------------------------------------------------------------------------

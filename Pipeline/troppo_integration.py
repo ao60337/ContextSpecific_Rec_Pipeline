@@ -27,7 +27,7 @@ import re
 from troppo.omics.readers.generic import TabularReader
 from troppo.methods_wrappers import ReconstructionWrapper
 from cobamp.utilities.parallel import batch_run
-from utils.config_variables import *
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.config_variables import *
 
 enable_print()
 
@@ -77,7 +77,7 @@ def reconstruction_function(omics_container, parameters: dict):
 
 
 def troppo_omics_integration(model: cobra.Model, algorithm: str, threshold: float, thread_number: int,
-                             omics_dataset: pandas.DataFrame):
+                             omics_dataset: pandas.DataFrame, thresholds_map = {}):
     """
     This function is used to run the Troppo's integration algorithms.
 
@@ -122,7 +122,7 @@ def troppo_omics_integration(model: cobra.Model, algorithm: str, threshold: floa
 
     enable_print()
     print('Reconstruction Wrapper Finished.')
-    block_print()
+    # block_print()
 
     parameters = {'threshold': threshold, 'reconstruction_wrapper': reconstruction_wrapper, 'algorithm': algorithm}
 

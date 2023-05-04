@@ -33,7 +33,7 @@ def reconstruction_pipeline():
     print('-------------------------------------- Processing Omics Dataset. --------------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
 
-    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0)
+    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0, sep="\t")
     print('Omics dataset Loaded.')
 
     # The following lines of code are used to apply a thresholding filter to the omics dataset. The thresholding filter

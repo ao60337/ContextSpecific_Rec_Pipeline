@@ -17,8 +17,8 @@ def enablePrint():
 
 blockPrint()
 
-from utils.config_variables import PROTECTED
-from utils.pipeline_paths import MODEL_TASKS_PATH, MODEL_TASKS_RESULTS_PATH
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.config_variables import PROTECTED
+from Tissue_specific_Reconstruction_Pipeline.Pipeline.utils.pipeline_paths import MODEL_TASKS_PATH, MODEL_TASKS_RESULTS_PATH
 from json import JSONEncoder
 from troppo.tasks.core import TaskEvaluator
 from troppo.tasks.task_io import JSONTaskIO

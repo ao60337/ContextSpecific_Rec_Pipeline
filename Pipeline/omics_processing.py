@@ -103,8 +103,8 @@ def thresholding_filter(omics_dataframe: pandas.DataFrame, thresholding_strategy
     for sample_id in omics_dataframe.index:
         sample = omics_dataframe.loc[sample_id, :]
 
-        name = '_'.join(map(str, [thresholding_strategy, global_threshold_upper,
-                                  global_threshold_lower, local_threshold]))
+        name = '_'.join(map(str, [thresholding_strategy, global_threshold_lower,
+                                  global_threshold_upper, local_threshold]))
 
         gtl = global_thresholds.iloc[global_threshold_lower]
         gtu = global_thresholds.iloc[global_threshold_upper]

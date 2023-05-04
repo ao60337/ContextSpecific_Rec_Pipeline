@@ -1,5 +1,6 @@
 from .medium_variables import UPTAKE_DRAINS
-from numpy import linspace
+# from numpy import linsp
+# ace
 
 # Model and dataset names ----------------------------------------------------------------------------------------------
 MODEL = 'Dsalina'
@@ -13,8 +14,8 @@ NOMENCLATURE = 'NCBI'
 OMICS_TYPE = 'transcriptomics'
 THRESHOLDING_STRATEGY = 'local2'  # default, global, local1, local2
 GLOBAL_THRESHOLD_LOWER = 1  # int
-GLOBAL_THRESHOLD_UPPER = 4  # int
-LOCAL_THRESHOLD = 4  # int
+GLOBAL_THRESHOLD_UPPER = 3  # int
+LOCAL_THRESHOLD = 2  # int
 '''---Thresholding parameters---
 Thresholding Strategies:
  - default: Does not use any thresholding strategy to filter the omics data;

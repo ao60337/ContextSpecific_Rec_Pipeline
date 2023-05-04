@@ -7,6 +7,7 @@ from model_handle import load_model, sbml_model_reconstruction
 from troppo_integration import troppo_omics_integration
 from omics_processing import thresholding_filter
 from task_evaluation import task_eval
+# import numpy as np
 
 
 # TODO: Add the option for more integration algorithms in the pipeline.
@@ -34,6 +35,11 @@ def reconstruction_pipeline():
 
     omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0, sep="\t")
     print('Omics dataset Loaded.')
+
+    # The following lines of code are used to apply a thresholding filter to the omics dataset. The thresholding filter
+    # will transform the omics dataset according to the thresholding strategy selected. After the transformation,
+    # genes considered as 'active' will have a positive value, and genes considered as 'inactive' will have a
+    # negative value. In this case, the threshold value used for Troppo can be set to 0.
 
     if THRESHOLDING_STRATEGY != 'default':
         omics_data = thresholding_filter(omics_dataframe=omics_data, thresholding_strategy=THRESHOLDING_STRATEGY,

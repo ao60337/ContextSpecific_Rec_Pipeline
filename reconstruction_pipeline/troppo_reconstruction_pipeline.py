@@ -33,7 +33,7 @@ def reconstruction_pipeline():
     print('-------------------------------------- Processing Omics Dataset. --------------------------------------')
     print('-------------------------------------------------------------------------------------------------------')
 
-    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0, sep="\t")
+    omics_data = pd.read_csv(OMICS_DATA_PATH, index_col=0, sep=",")
     print('Omics dataset Loaded.')
 
     # The following lines of code are used to apply a thresholding filter to the omics dataset. The thresholding filter
@@ -48,6 +48,8 @@ def reconstruction_pipeline():
                                          local_threshold=LOCAL_THRESHOLD)
 
         print(f'{THRESHOLDING_STRATEGY} threshold filter applied.')
+
+    omics_data.to_csv(os.path.join(f'results/jaccard_distances/{DATASET}/LocalT2_1_3_2_omics_data.csv'))
 
     print('-------------------------------------------------------------------------------------------------------')
     print('------------------------------- Starting Omics Integration with Troppo. -------------------------------')

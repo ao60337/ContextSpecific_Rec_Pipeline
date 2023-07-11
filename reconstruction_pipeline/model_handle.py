@@ -94,12 +94,23 @@ def sbml_model_reconstruction(model_template: cobra.Model, sample: str, integrat
     for reaction_id, bound in MEDIUM_CONDITIONS[MEDIUM_NAME].items():
         if reaction_id in temp_model.reactions:
             temp_model.reactions.get_by_id(reaction_id).bounds = bound
+
         else:
             print(f'{reaction_id} exchange not found in the model.')
 
     model_name = sample.split('_')[1] + '/' + sample + '.xml'
 
+    if 'COVID19' in model_name:
+        temp_model.objective = 'VBOF'
+    else:
+        temp_model.objective = 'biomass_human'
+
+    print_model_details(temp_model)
+
+    print('Model Objective:', temp_model.objective)
+    print('Objective Production:', temp_model.optimize().objective_value)
+
     cobra.io.write_sbml_model(temp_model, os.path.join(MODEL_RESULTS_PATH, model_name))
 
     print(f'Model reconstruction for {sample} finished.')
-    print_model_details(temp_model)
+

@@ -11,8 +11,8 @@ MEDIUM_NAME = 'HAM Medium'
 NOMENCLATURE = 'ensemble_gene_id'
 OMICS_TYPE = 'transcriptomics'
 THRESHOLDING_STRATEGY = 'local2'  # default, global, local1, local2
-GLOBAL_THRESHOLD_LOWER = 1  # int
-GLOBAL_THRESHOLD_UPPER = 3  # int
+GLOBAL_THRESHOLD_LOWER = 2  # int
+GLOBAL_THRESHOLD_UPPER = 4  # int
 LOCAL_THRESHOLD = 2  # int
 '''---Thresholding parameters---
 Thresholding Strategies:
@@ -26,8 +26,9 @@ The numbers in the thresholding options represent the position of the value to u
 
 # Troppo parameters ----------------------------------------------------------------------------------------------------
 ALGORITHMS = ['fastcore']
-THREAD_NUMBER_FASTCORE = 1  # int.
+THREAD_NUMBER_FASTCORE = 2  # int.
 THREAD_NUMBER_TINIT = 2  # int.
+THREAD_NUMBER_GIMME = 2  # int.
 AND_OR_FUNCS = (min, sum)  # (min, max) or (min, sum).
 INTEGRATION_THRESHOLDS = [0]
 PROTECTED = ['biomass_human', 'VBOF', 'EX_VBOF'] + list(UPTAKE_DRAINS['HAM Medium'])  # List of Reactions to protect.
@@ -42,5 +43,5 @@ GAP_FILLING = False
 # ----------------------------------------------------------------------------------------------------------------------
 
 # Model Reconstruction -------------------------------------------------------------------------------------------------
-RECONSTRUCT_MODELS = False
+RECONSTRUCT_MODELS = True
 # ----------------------------------------------------------------------------------------------------------------------

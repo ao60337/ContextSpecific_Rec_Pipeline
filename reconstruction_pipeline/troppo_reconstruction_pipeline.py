@@ -68,6 +68,9 @@ def reconstruction_pipeline():
         elif algorithm == 'tinit':
             thred_number = THREAD_NUMBER_TINIT
 
+        elif algorithm == 'gimme':
+            thred_number = THREAD_NUMBER_GIMME
+
         else:
             return 'Algorithm not supported by this pipeline.'
 

@@ -60,6 +60,9 @@ def reconstruction_function(omics_container, parameters: dict):
     threshold, rec_wrapper, method = [parameters[parameter] for parameter in
                                       ['threshold', 'reconstruction_wrapper', 'algorithm']]
 
+    reac_ids = rec_wrapper.model_reader.r_ids
+    metab_ids = rec_wrapper.model_reader.m_ids
+
     # noinspection PyBroadException
     try:
         if method == 'fastcore':
@@ -69,6 +72,12 @@ def reconstruction_function(omics_container, parameters: dict):
         elif method == 'tinit':
             return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=AND_OR_FUNCS,
                                               integration_strategy=('continuous', score_apply), solver='CPLEX')
+
+        elif method == 'gimme':
+            return rec_wrapper.run_from_omics(omics_data=omics_container, algorithm=method, and_or_funcs=AND_OR_FUNCS,
+                                              integration_strategy=('continuous', score_apply),
+                                              objectives=[{'biomass_human': 1}], preprocess=True, flux_threshold=None,
+                                              reaction_ids=reac_ids, metabolite_ids=metab_ids)
 
     except:
         traceback.print_exc()

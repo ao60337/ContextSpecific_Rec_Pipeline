@@ -1,4 +1,4 @@
-# Tissue-specific Reconstruction Pipeline
+# Context-specific Reconstruction Pipeline
 A generic pipeline to reconstruct context-specific models using Troppo.
 
 ## Usage
